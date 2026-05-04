@@ -1,0 +1,28 @@
+Package: valideupdater
+Title: A Suite of Tools for Updating Prediction Models
+Version: 0.1.0
+Authors@R: 
+    c(person(given = "Yiran",
+             family = "Zhang",
+             role = c("aut", "cre"),
+             email = "yiran.zhang@manchester.ac.uk",
+             comment = c(ORCID = "0000-0000-0000-0000")))
+Description: Provides a comprehensive suite of functions to clean, 
+    analyse, and visualise complex datasets. This programme streamlines 
+    the workflow by offering automated standardisation and 
+    customisable plotting routines.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.3
+Depends: 
+    R (>= 4.1.0)
+Imports: 
+    dplyr (>= 1.0.0),
+    ggplot2,
+    rlang
+Suggests: 
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
