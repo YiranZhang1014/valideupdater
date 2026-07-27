@@ -2,6 +2,7 @@ validate <- function() {
   UseMethod("validate")
 }
 
+#' @export
 validate.default <- function() {
   stop("No validate method for this class of object")
 }

@@ -1,2 +1,7 @@
-library(testthat)
-test_dir("tests/testthat")
+# library(testthat)
+library(devtools)
+setwd("/mnt/iusers01/ja01/p28917yz/developments/valideupdater")
+
+# test_dir("tests/testthat")
+test(filter = "model")
+test(filter = "predict")
