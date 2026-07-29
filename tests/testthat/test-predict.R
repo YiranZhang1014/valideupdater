@@ -29,7 +29,7 @@ test_that("predict.logistic Correct log-odds", {
   expect_equal(pred_res$lp, expected_lp)
 })
 
-test_that("predict.logistic Lack variables in newdata", {
+test_that("predict.logistic Lack variables in new_data", {
   coefs <- c("(Intercept)" = -1.0, age = 0.05, bmi = 0.1)
   mod <- build_model(coefs, type = "logistic")
 

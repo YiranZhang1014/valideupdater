@@ -3,5 +3,6 @@
 S3method(predict,logistic)
 S3method(validate,default)
 S3method(validate,logistic)
+export(build_model)
 export(dummy_vars)
 export(to_data_table)

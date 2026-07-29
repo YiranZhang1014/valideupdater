@@ -4,12 +4,12 @@
 \alias{predict.logistic}
 \title{Predict Method for Logistic Models}
 \usage{
-\method{predict}{logistic}(object, newdata, type = c("all", "prob", "lp"), ...)
+\method{predict}{logistic}(object, new_data, type = c("all", "prob", "lp"), ...)
 }
 \arguments{
 \item{object}{An object of class 'logistic' created by `build_model`.}
 
-\item{newdata}{A data.frame or data.table containing the predictors.}
+\item{new_data}{A data.frame or data.table containing the predictors.}
 
 \item{type}{Output type: default "all" returns both probabilities and linear predictors.
 "prob" returns predicted probabilities,
