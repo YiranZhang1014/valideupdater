@@ -1,23 +1,14 @@
-#' Predict Method for Logistic Models
+#' Calculate the linear predictor for linear-based models
+#'
+#' An internal helper function that ensures input data is handled correctly,
+#' checks for missing predictor columns, extracts the design matrix, and
+#' calculates the linear combination ($X\beta + \beta_0$).
 #'
 #' @param object An object of class 'logistic' created by `build_model`.
-#' @param new_data A data.frame or data.table containing the predictors.
-#' @param type Output type: default "all" returns both probabilities and linear predictors.
-#'   "prob" returns predicted probabilities,
-#'   "lp" returns linear predictors (log-odds).
-#' @param ... Additional arguments (currently unused).
-#'
-#' @return A list of predicted probabilities and/or log-odds.
-#' @export
-predict.logistic <- function(
-  object,
-  new_data,
-  type = c("all", "prob", "lp"),
-  ...
-) {
-  type <- match.arg(type)
-
-  # Ensure new_data is converted or handled as data.frame / data.table
+#' @param new_data A `data.frame` or `data.table` containing new predictor values.
+#' @return A numeric vector representing the calculated linear predictor values.
+#' @keywords internal
+calculate_lp <- function(object, new_data) {
   new_data <- to_data_table(new_data)
 
   coefs <- object$coefs
@@ -40,30 +31,71 @@ predict.logistic <- function(
   # Extract design matrix X for predictors
   X <- as.matrix(new_data[, predictor_names, drop = FALSE, with = FALSE])
 
-  # Calculate linear predictor: X %*% beta + intercept
-  linear_predictor <- as.vector(X %*% predictor_coefs) + intercept_val
+  # Calculate linear combination
+  lp <- as.vector(X %*% predictor_coefs) + intercept_val
+  return(lp)
+}
 
-  # Create a list to save required predicted results.
+#' Predict method for linear regression models
+#'
+#' Computes predicted response values for new data using a fitted linear regression model.
+#'
+#' @param object An object of class 'logistic' created by `build_model`.
+#' @param new_data A `data.frame` or `data.table` containing the new predictor variables.
+#' @param type A character string specifying the type of prediction required.
+#'   Currently supports `"response"`.
+#' @param ... Additional arguments passed to or from other methods.
+#' @return A list containing the predicted response values (`$fit`).
+#' @export
+predict.linear <- function(
+  object,
+  new_data,
+  type = c("response"),
+  ...
+) {
+  type <- match.arg(type)
+
+  # Utilize the core linear predictor function
+  fit <- calculate_lp(object, new_data)
+
+  res_lst <- list()
+  if (type == "response") {
+    res_lst$fit <- fit
+  }
+
+  return(res_lst)
+}
+
+
+#' @param object An object of class 'logistic' created by `build_model`.
+#' @param new_data A `data.frame` or `data.table` containing the new predictor variables.
+#' @param type A character string specifying the output type. Options are `"all"` (default),
+#'   `"prob"` (predicted probabilities), or `"lp"` (linear predictors).
+#' @param ... Additional arguments passed to or from other methods.
+#' @return A list containing the requested prediction components (`$lp` and/or `$prob`).
+#' @export
+predict.logistic <- function(
+  object,
+  new_data,
+  type = c("all", "prob", "lp"),
+  ...
+) {
+  type <- match.arg(type)
+
+  # Utilize the core linear predictor function
+  linear_predictor <- calculate_lp(object, new_data)
+
   res_lst <- list()
 
   # Linear predictor
-  if (type == "lp") {
+  if (type %in% c("lp", "all")) {
     res_lst$lp <- linear_predictor
   }
 
   # Probability
-  probabilities <- 1 / (1 + exp(-linear_predictor))
-
-  if (type == "prob") {
-    res_lst$prob <- probabilities
+  if (type %in% c("prob", "all")) {
+    res_lst$prob <- 1 / (1 + exp(-linear_predictor))
   }
 
-  # Both LP and Prob
-  if (type == "all") {
-    res_lst$lp <- linear_predictor
-    res_lst$prob <- probabilities
-  }
-
-  # Reture
   return(res_lst)
 }
