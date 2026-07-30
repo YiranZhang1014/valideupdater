@@ -108,40 +108,56 @@ cali_plot <- function(
   axis_breaks <- pretty(axis_lim, n = 5)
 
   # ---- Data preparation using data.table
-  dt <- as.data.table(data)
-  plot_dt <- data.table(
+  dt <- data.table::as.data.table(data)
+  plot_dt <- data.table::data.table(
     outcome = dt[[outcome_col]],
     prob = dt[[prob_col]]
   )
 
   # ---- Calculate binned data (pure data.table approach)
-  # Assign bin factor using quantile break points
-  plot_dt[,
-    bin := cut(
-      prob,
-      breaks = quantile(
-        prob,
-        probs = seq(0, 1, length.out = n_bins + 1),
-        na.rm = TRUE
-      ),
-      include.lowest = TRUE,
-      labels = FALSE
+  # Extract quantiles and remove duplicate thresholds to prevent binning errors
+  q_breaks <- unique(
+    quantile(
+      plot_dt$prob,
+      probs = seq(0, 1, length.out = n_bins + 1),
+      na.rm = TRUE
     )
-  ]
+  )
 
-  # Aggregate mean values per bin
-  binned_df <- plot_dt[,
-    .(
-      mean_pred = mean(prob, na.rm = TRUE),
-      mean_obs = mean(outcome, na.rm = TRUE)
-    ),
-    by = bin
-  ]
+  # If all predicted probabilities are identical or unique breaks are fewer than 2, skip binning safely
+  if (length(q_breaks) > 1) {
+    plot_dt[,
+      bin := cut(
+        prob,
+        breaks = q_breaks,
+        include.lowest = TRUE,
+        labels = FALSE
+      )
+    ]
+
+    # Aggregate mean values per bin
+    binned_df <- plot_dt[
+      !is.na(bin),
+      .(
+        mean_pred = mean(prob, na.rm = TRUE),
+        mean_obs = mean(outcome, na.rm = TRUE)
+      ),
+      by = bin
+    ]
+  } else {
+    # Fallback for single unique probability value across all observations
+    binned_df <- plot_dt[,
+      .(
+        mean_pred = mean(prob, na.rm = TRUE),
+        mean_obs = mean(outcome, na.rm = TRUE)
+      )
+    ]
+  }
 
   # ---- Draw top main plot (Calibration Curve)
-  p_top <- ggplot() +
+  p_top <- ggplot2::ggplot() +
     # Ideal diagonal line
-    geom_abline(
+    ggplot2::geom_abline(
       intercept = 0,
       slope = 1,
       linetype = "dashed",
@@ -152,9 +168,9 @@ cali_plot <- function(
   # Smoothed curve
   if (smooth_method == "gam") {
     p_top <- p_top +
-      geom_smooth(
+      ggplot2::geom_smooth(
         data = plot_dt,
-        aes(x = prob, y = outcome),
+        ggplot2::aes(x = prob, y = outcome),
         method = "gam",
         formula = y ~ s(x, bs = "cs"),
         color = "black",
@@ -172,9 +188,9 @@ cali_plot <- function(
     lowess_df <- data.frame(prob = fit_lowess$x, outcome = fit_lowess$y)
 
     p_top <- p_top +
-      geom_line(
+      ggplot2::geom_line(
         data = lowess_df,
-        aes(x = prob, y = outcome),
+        ggplot2::aes(x = prob, y = outcome),
         color = "black",
         linewidth = 0.8
       )
@@ -182,9 +198,9 @@ cali_plot <- function(
 
   p_top <- p_top +
     # Binned scatter points
-    geom_point(
+    ggplot2::geom_point(
       data = binned_df,
-      aes(x = mean_pred, y = mean_obs),
+      ggplot2::aes(x = mean_pred, y = mean_obs),
       shape = 21,
       fill = "white",
       color = "black",
@@ -192,53 +208,58 @@ cali_plot <- function(
       alpha = 0.9
     ) +
     # Set coordinate axes with dynamic breaks
-    scale_x_continuous(breaks = axis_breaks) +
-    scale_y_continuous(breaks = axis_breaks) +
-    coord_cartesian(xlim = axis_lim, ylim = axis_lim) +
-    labs(title = plot_title, y = "Observed Frequency") +
-    theme_classic() +
-    theme(
-      axis.title.x = element_blank(),
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      plot.title = element_text(face = "bold", size = 14)
+    ggplot2::scale_x_continuous(breaks = axis_breaks) +
+    ggplot2::scale_y_continuous(breaks = axis_breaks) +
+    ggplot2::coord_cartesian(xlim = axis_lim, ylim = axis_lim) +
+    ggplot2::labs(title = plot_title, y = "Observed Frequency") +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      axis.title.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_blank(),
+      axis.ticks.x = ggplot2::element_blank(),
+      plot.title = ggplot2::element_text(face = "bold", size = 14)
     )
 
   # ---- Draw bottom histogram
-  p_bottom <- ggplot(plot_dt, aes(x = prob))
+  p_bottom <- ggplot2::ggplot(plot_dt, ggplot2::aes(x = prob))
 
   if (hist_type == "density") {
     p_bottom <- p_bottom +
-      geom_histogram(
-        aes(y = after_stat(density)),
+      ggplot2::geom_histogram(
+        ggplot2::aes(y = ggplot2::after_stat(density)),
         bins = hist_bins,
         fill = "gray",
         color = "black",
         linewidth = 0.1
       ) +
-      labs(x = "Predicted Probability", y = "Density")
+      ggplot2::labs(x = "Predicted Probability", y = "Density")
   } else {
     p_bottom <- p_bottom +
-      geom_histogram(
+      ggplot2::geom_histogram(
         bins = hist_bins,
         fill = "gray",
         color = "black",
         linewidth = 0.1
       ) +
-      labs(x = "Predicted Probability", y = "Count")
+      ggplot2::labs(x = "Predicted Probability", y = "Count")
   }
 
   p_bottom <- p_bottom +
-    scale_x_continuous(breaks = axis_breaks) +
-    coord_cartesian(xlim = axis_lim) +
-    theme_classic() +
-    theme(
-      panel.grid.major.y = element_blank(),
-      panel.grid.minor = element_blank()
+    ggplot2::scale_x_continuous(breaks = axis_breaks) +
+    ggplot2::coord_cartesian(xlim = axis_lim) +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      panel.grid.major.y = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank()
     )
 
   # ---- Combine plots using patchwork
-  combined_plot <- p_top / p_bottom + plot_layout(heights = c(4, 1))
+  combined_plot <- patchwork::wrap_plots(
+    p_top,
+    p_bottom,
+    ncol = 1,
+    heights = c(4, 1)
+  )
 
   return(combined_plot)
 }
