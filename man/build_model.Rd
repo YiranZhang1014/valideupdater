@@ -4,7 +4,7 @@
 \alias{build_model}
 \title{Build model based on the coefficient information}
 \usage{
-build_model(coefs, type = c("logistic", "survival"))
+build_model(coefs, type = c("linear", "logistic", "survival"))
 }
 \arguments{
 \item{coefs}{a named vector including each coeficicient and its beta. Must has `Intercept` term.}
