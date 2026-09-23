@@ -89,7 +89,7 @@ cali_plot <- function(
   n_bins = 10,
   plot_title = "Calibration Plot",
   hist_bins = 100,
-  hist_type = c("count", "density"),
+  hist_type = c("density", "count"),
   smooth_method = c("gam", "lowess"), # Choice of smoother
   lowess_frac = 0.5, # Window size for lowess
   lowess_delta = 0.01, # Distance threshold for lowess
