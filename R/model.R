@@ -1,9 +1,9 @@
-#' Build model based on the coefficient information
+#' Build a model based on the given equation information
 #' @param coefs a named vector including each coeficicient and its beta. Must has `Intercept` term.
-#' @param type the type of model to build, currently only support "logistic" and "survival"
+#' @param type the type of model to build, currently only support "linear", "logistic"
 #'
 #' @export
-build_model <- function(coefs, type = c("linear", "logistic", "survival")) {
+build_model <- function(coefs, type = c("linear", "logistic")) {
   # Check the type argument and ensure it's one of the allowed values
   type <- match.arg(type)
 
@@ -37,5 +37,7 @@ build_model <- function(coefs, type = c("linear", "logistic", "survival")) {
 
   # Assign class to the model
   class(model) <- c(type, class(model))
+
+  # Return the model object
   return(model)
 }
