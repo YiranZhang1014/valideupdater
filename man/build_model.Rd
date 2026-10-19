@@ -2,15 +2,15 @@
 % Please edit documentation in R/model.R
 \name{build_model}
 \alias{build_model}
-\title{Build model based on the coefficient information}
+\title{Build a model based on the given equation information}
 \usage{
-build_model(coefs, type = c("linear", "logistic", "survival"))
+build_model(coefs, type = c("linear", "logistic"))
 }
 \arguments{
 \item{coefs}{a named vector including each coeficicient and its beta. Must has `Intercept` term.}
 
-\item{type}{the type of model to build, currently only support "logistic" and "survival"}
+\item{type}{the type of model to build, currently only support "linear", "logistic"}
 }
 \description{
-Build model based on the coefficient information
+Build a model based on the given equation information
 }
