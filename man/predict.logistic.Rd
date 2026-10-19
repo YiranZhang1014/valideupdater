@@ -2,24 +2,23 @@
 % Please edit documentation in R/predict.R
 \name{predict.logistic}
 \alias{predict.logistic}
-\title{Predict Method for Logistic Models}
+\title{Predict method for linear regression models}
 \usage{
 \method{predict}{logistic}(object, new_data, type = c("all", "prob", "lp"), ...)
 }
 \arguments{
 \item{object}{An object of class 'logistic' created by `build_model`.}
 
-\item{new_data}{A data.frame or data.table containing the predictors.}
+\item{new_data}{A `data.frame` or `data.table` containing the new predictor variables.}
 
-\item{type}{Output type: default "all" returns both probabilities and linear predictors.
-"prob" returns predicted probabilities,
-"lp" returns linear predictors (log-odds).}
+\item{type}{A character string specifying the output type. Options are `"all"` (default),
+`"prob"` (predicted probabilities), or `"lp"` (linear predictors).}
 
-\item{...}{Additional arguments (currently unused).}
+\item{...}{Additional arguments passed to or from other methods.}
 }
 \value{
-A list of predicted probabilities and/or log-odds.
+A list containing the requested prediction components (`$lp` and/or `$prob`).
 }
 \description{
-Predict Method for Logistic Models
+Computes predicted response/probability values for new data using logistic model.
 }
