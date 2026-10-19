@@ -82,7 +82,7 @@ get_pred_dist <- function(obs, prob, xlab = "Predicted Probability") {
 #'   axis_lim = 0.6
 #' )
 #' }
-cali_plot <- function(
+cali_plot.logistic <- function(
   data,
   outcome_col = "observed",
   prob_col = "probability",
@@ -261,5 +261,85 @@ cali_plot <- function(
     heights = c(4, 1)
   )
 
+  # Return the combined plot
   return(combined_plot)
+}
+
+
+#' @title Calibration Plot for Linear Regression
+#' @description Generates a scatter plot of predicted versus observed continuous values with a smoothed trend line.
+#' @param data A data.table or data.frame containing the predictions and outcomes.
+#' @param outcome_col A character string specifying the true continuous outcome column.
+#' @param pred_col A character string specifying the predicted continuous value column.
+#' @param sample_proportion Numeric between 0 and 1 indicating the percentage of data to sample (default: 1).
+#' @param ... Additional arguments.
+#' @import ggplot2
+#' @import data.table
+#' @export
+cali_plot.linear <- function(
+  data,
+  outcome_col,
+  pred_col,
+  sample_proportion = 1,
+  ...
+) {
+  # Convert to data.table to ensure consistent behaviour
+  dt <- as.data.table(data)
+
+  # Validate column existence
+  if (!all(c(outcome_col, pred_col) %in% names(dt))) {
+    stop(
+      "The specified outcome or prediction columns are not found in the dataset."
+    )
+  }
+
+  # Validate sample proportion input
+  if (sample_proportion <= 0 || sample_proportion > 1) {
+    stop(
+      "The 'sample_proportion' must be greater than 0 and less than or equal to 1."
+    )
+  }
+
+  # Randomly downsample the dataset if a proportion less than 1 is specified to minimise overplotting
+  if (sample_proportion < 1) {
+    n_sample <- round(nrow(dt) * sample_proportion)
+    dt <- dt[sample(.N, n_sample)]
+  }
+
+  # Determine axis limits to ensure the reference line is correctly scaled
+  min_val <- min(c(dt[[outcome_col]], dt[[pred_col]]), na.rm = TRUE)
+  max_val <- max(c(dt[[outcome_col]], dt[[pred_col]]), na.rm = TRUE)
+
+  # Construct the scatter plot mirroring standard aesthetic styles
+  p <- ggplot(dt, aes(x = .data[[pred_col]], y = .data[[outcome_col]])) +
+    geom_point(colour = "black", alpha = 0.3, size = 1.5) +
+    # Add the smoothed trend line (red) and confidence interval (grey shaded area)
+    geom_smooth(
+      colour = "red",
+      fill = "grey50",
+      alpha = 0.4,
+      method = "auto",
+      se = TRUE
+    ) +
+    geom_abline(
+      intercept = 0,
+      slope = 1,
+      linetype = "dashed",
+      colour = "black"
+    ) +
+    scale_x_continuous(limits = c(min_val, max_val)) +
+    scale_y_continuous(limits = c(min_val, max_val)) +
+    labs(
+      x = "Predicted Value",
+      y = "Observed Value",
+      title = "Calibration Plot (Linear)"
+    ) +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(hjust = 0, face = "bold"),
+      axis.line = element_line(colour = "black"),
+      panel.grid.minor = element_blank()
+    )
+
+  return(p)
 }
