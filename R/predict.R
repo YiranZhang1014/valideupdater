@@ -1,41 +1,3 @@
-#' Calculate the linear predictor for linear-based models
-#'
-#' An internal helper function that ensures input data is handled correctly,
-#' checks for missing predictor columns, extracts the design matrix, and
-#' calculates the linear combination ($X\beta + \beta_0$).
-#'
-#' @param object An object of class 'logistic' created by `build_model`.
-#' @param new_data A `data.frame` or `data.table` containing new predictor values.
-#' @return A numeric vector representing the calculated linear predictor values.
-#' @keywords internal
-calculate_lp <- function(object, new_data) {
-  new_data <- to_data_table(new_data)
-
-  coefs <- object$coefs
-  coef_names <- names(coefs)
-
-  # Separate Intercept and predictor coefficients
-  intercept_val <- coefs[["(Intercept)"]]
-  predictor_coefs <- coefs[coef_names != "(Intercept)"]
-  predictor_names <- names(predictor_coefs)
-
-  # Check if all required predictor columns exist in new_data
-  missing_cols <- setdiff(predictor_names, names(new_data))
-  if (length(missing_cols) > 0) {
-    stop(
-      "The following predictor variables are missing in `new_data`: ",
-      paste(missing_cols, collapse = ", ")
-    )
-  }
-
-  # Extract design matrix X for predictors
-  X <- as.matrix(new_data[, predictor_names, drop = FALSE, with = FALSE])
-
-  # Calculate linear combination
-  lp <- as.vector(X %*% predictor_coefs) + intercept_val
-  return(lp)
-}
-
 #' Predict method for linear regression models
 #'
 #' Computes predicted response values for new data using a fitted linear regression model.
@@ -69,7 +31,7 @@ predict.linear <- function(
 #' Predict method for linear regression models
 #'
 #' Computes predicted response/probability values for new data using logistic model.
-#' 
+#'
 #' @param object An object of class 'logistic' created by `build_model`.
 #' @param new_data A `data.frame` or `data.table` containing the new predictor variables.
 #' @param type A character string specifying the output type. Options are `"all"` (default),

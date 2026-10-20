@@ -1,28 +1,3 @@
-# Helper function to calculate the linear predictor (LP)
-# This computes X * beta + intercept for the dataset
-.calculate_lp <- function(model, data) {
-  # Identify predictor names by excluding the standard intercept
-  preds <- names(model$coefs)[names(model$coefs) != "(Intercept)"]
-
-  # Ensure all required predictors are present in the dataset
-  missing_preds <- setdiff(preds, colnames(data))
-  if (length(missing_preds) > 0) {
-    stop(paste(
-      "The following predictors are missing from the data:",
-      paste(missing_preds, collapse = ", ")
-    ))
-  }
-
-  # Extract the design matrix and coefficients
-  X <- as.matrix(data[, preds, drop = FALSE])
-  beta <- model$coefs[preds]
-  intercept <- model$coefs["(Intercept)"]
-
-  # Compute and return the linear predictor
-  lp <- as.numeric(X %*% beta + intercept)
-  return(lp)
-}
-
 #' Recalibrate the intercept only (Recalibration-in-the-large)
 #' This method adjusts the intercept of a model to better fit the observed data.
 #' @param model The original model object.
@@ -39,7 +14,7 @@ recalibrate.intercept <- function(model, new_data, outcome_col) {
   }
 
   y <- new_data[[outcome_col]]
-  lp <- .calculate_lp(model, new_data)
+  lp <- calculate_lp(model, new_data)
 
   # Select the appropriate exponential family for the GLM
   fam <- if (model$type == "logistic") binomial() else gaussian()
@@ -74,7 +49,7 @@ recalibrate.full <- function(model, new_data, outcome_col) {
   }
 
   y <- new_data[[outcome_col]]
-  lp <- .calculate_lp(model, new_data)
+  lp <- calculate_lp(model, new_data)
 
   # Select the appropriate exponential family for the GLM
   fam <- if (model$type == "logistic") binomial() else gaussian()
