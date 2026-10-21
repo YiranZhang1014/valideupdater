@@ -42,7 +42,7 @@ predict.linear <- function(
 predict.logistic <- function(
   object,
   new_data,
-  type = c("all", "prob", "lp"),
+  type = c("all", "link", "response"),
   ...
 ) {
   type <- match.arg(type)
@@ -54,12 +54,12 @@ predict.logistic <- function(
 
   # Linear predictor
   if (type %in% c("lp", "all")) {
-    res_lst$lp <- linear_predictor
+    res_lst$linear_predictor <- linear_predictor
   }
 
   # Probability
   if (type %in% c("prob", "all")) {
-    res_lst$prob <- 1 / (1 + exp(-linear_predictor))
+    res_lst$probability <- 1 / (1 + exp(-linear_predictor))
   }
 
   return(res_lst)

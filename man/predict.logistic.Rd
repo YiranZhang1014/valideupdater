@@ -4,7 +4,7 @@
 \alias{predict.logistic}
 \title{Predict method for linear regression models}
 \usage{
-\method{predict}{logistic}(object, new_data, type = c("all", "prob", "lp"), ...)
+\method{predict}{logistic}(object, new_data, type = c("all", "link", "response"), ...)
 }
 \arguments{
 \item{object}{An object of class 'logistic' created by `build_model`.}
