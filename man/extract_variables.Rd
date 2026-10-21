@@ -4,7 +4,13 @@
 \alias{extract_variables}
 \title{Extract essential variables only model needs}
 \usage{
-extract_variables(data, model_obj, outcome = NULL, check = TRUE)
+extract_variables(
+  data,
+  model_obj,
+  outcome = NULL,
+  check = TRUE,
+  other_cols = NULL
+)
 }
 \arguments{
 \item{data}{A data.table containing the dataset.}
@@ -12,6 +18,8 @@ extract_variables(data, model_obj, outcome = NULL, check = TRUE)
 \item{outcome}{A string representing the name of the outcome variable.}
 
 \item{check}{A logical value indicating whether to check for missing variables in the dataset.}
+
+\item{other_cols}{An optional character vector of additional columns to include in the output.}
 
 \item{model_eq}{A named vector of coefficients from the model equation.}
 }

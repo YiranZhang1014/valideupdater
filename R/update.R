@@ -19,6 +19,7 @@ update <- function(
     "recalibrate_intercept",
     "recalibrate_full",
     "recalibrate",
+    "recalibration",
     "refit"
   )
 ) {
@@ -28,7 +29,7 @@ update <- function(
   # Dispatch to the appropriate internal function
   if (type == "recalibrate_intercept") {
     return(recalibrate_intercept(model_obj, new_data, outcome_col))
-  } else if (type %in% c("recalibrate_full", "recalibrate")) {
+  } else if (type %in% c("recalibrate_full", "recalibrate", "recalibration")) {
     return(recalibrate_full(model_obj, new_data, outcome_col))
   } else if (type == "refit") {
     return(refit(model_obj, new_data, outcome_col))

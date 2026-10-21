@@ -8,7 +8,8 @@ update(
   model_obj,
   new_data,
   outcome_col,
-  type = c("recalibrate_intercept", "recalibrate_full", "recalibrate", "refit")
+  type = c("recalibrate_intercept", "recalibrate_full", "recalibrate", "recalibration",
+    "refit")
 )
 }
 \arguments{
