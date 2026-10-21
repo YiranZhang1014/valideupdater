@@ -1,15 +1,36 @@
-validate <- function() {
-  UseMethod("validate")
+# update.R
+
+# ---- User-facing unified function ----
+#' Validate a model with new data
+#' @param obs A vector of observed outcomes.
+#' @param probs A vector of predicted probabilities.
+#' @param lps A vector of linear predictors.
+#' @param metrics A character vector specifying which validation metrics to compute.
+#'   Options include: "oe", "cal_int", "cal_slope", "auc", "r2", "brier".
+#' @param level A numeric value specifying the confidence level for the confidence intervals of the metrics.
+#' @param type The type of model being validated. Currently supports "binary" for logistic regression models.
+#' @return A list containing the computed validation metrics and their confidence intervals.
+#'
+#' @export
+validate <- function(
+  obs,
+  probs,
+  lps,
+  metrics = c("oe", "cal_int", "cal_slope", "auc", "r2", "brier"),
+  level = 0.95,
+  type = c(
+    "binary"
+  )
+) {
+  # Validate and match the selected method
+  type <- match.arg(type)
+  if (type == "binary") {
+    return(validate_logistic(obs, probs, lps, metrics, level))
+  }
 }
 
-#' @export
-validate.default <- function() {
-  stop("No validate method for this class of object")
-}
-
-#' @export
 # Functions for validating logistic regression models
-validate.logistic <- function(
+validate_logistic <- function(
   obs,
   probs,
   lps,
