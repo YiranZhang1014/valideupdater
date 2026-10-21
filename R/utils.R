@@ -96,10 +96,17 @@ calculate_lp <- function(object, new_data) {
 #' @param model_eq A named vector of coefficients from the model equation.
 #' @param outcome A string representing the name of the outcome variable.
 #' @param check A logical value indicating whether to check for missing variables in the dataset.
+#' @param other_cols An optional character vector of additional columns to include in the output.
 #' @return A data.table containing only the essential variables required for the model.
-#' 
-#' @export 
-extract_variables <- function(data, model_obj, outcome = NULL, check = TRUE) {
+#'
+#' @export
+extract_variables <- function(
+  data,
+  model_obj,
+  outcome = NULL,
+  check = TRUE,
+  other_cols = NULL
+) {
   # Extract variable names from the model equation
   model_vars <- names(model_obj$coefs)
 
@@ -107,7 +114,7 @@ extract_variables <- function(data, model_obj, outcome = NULL, check = TRUE) {
   model_vars_clean <- setdiff(model_vars, c("Intercept", "(Intercept)"))
 
   # Combine all required columns, ensuring uniqueness
-  final_cols <- unique(c(outcome, "pregid", model_vars_clean))
+  final_cols <- unique(c(outcome, "pregid", model_vars_clean, other_cols))
 
   # Check if all required variables exist in the data
   if (check) {
