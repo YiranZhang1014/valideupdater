@@ -5,26 +5,26 @@
 \title{Update a model with new data}
 \usage{
 update(
-  model,
+  model_obj,
   new_data,
   outcome_col,
-  method = c("recalibrate_intercept", "recalibrate_full", "recalibrate", "refit")
+  type = c("recalibrate_intercept", "recalibrate_full", "recalibrate", "refit")
 )
 }
 \arguments{
-\item{model}{The original model object.}
+\item{model_obj}{The original model object.}
 
 \item{new_data}{The dataset to use for updating the model.}
 
 \item{outcome_col}{The name of the outcome column in the dataset.}
 
-\item{method}{The update method to use. Options are:
+\item{type}{The update method to use. Options are:
 - `"recalibrate_intercept"`: Recalibrate the intercept only (Recalibration-in-the-large)
 - `"recalibrate_full"` or `"recalibrate"`: Recalibrate both intercept and slope
 - `"refit"`: Refit the model with new data}
 }
 \value{
-The updated model object.
+The updated model object containing new coefficients and update parameters.
 }
 \description{
 Update a model with new data

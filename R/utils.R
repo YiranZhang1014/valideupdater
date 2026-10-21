@@ -85,3 +85,55 @@ calculate_lp <- function(object, new_data) {
   lp <- as.vector(X %*% predictor_coefs) + intercept_val
   return(lp)
 }
+
+
+#' Extract essential variables only model needs
+#'
+#' This function extracts only the variables that are necessary for the model,
+#' based on the model equation and the outcome variable.
+#'
+#' @param data A data.table containing the dataset.
+#' @param model_eq A named vector of coefficients from the model equation.
+#' @param outcome A string representing the name of the outcome variable.
+#' @param check A logical value indicating whether to check for missing variables in the dataset.
+#' @param other_cols An optional character vector of additional columns to include in the output.
+#' @return A data.table containing only the essential variables required for the model.
+#'
+#' @export
+extract_variables <- function(
+  data,
+  model_obj,
+  outcome = NULL,
+  check = TRUE,
+  other_cols = NULL
+) {
+  # Extract variable names from the model equation
+  model_vars <- names(model_obj$coefs)
+
+  # Remove Intercept
+  model_vars_clean <- setdiff(model_vars, c("Intercept", "(Intercept)"))
+
+  # Combine all required columns, ensuring uniqueness
+  final_cols <- unique(c(outcome, "pregid", model_vars_clean, other_cols))
+
+  # Check if all required variables exist in the data
+  if (check) {
+    missing_cols <- setdiff(final_cols, names(data))
+
+    if (length(missing_cols) > 0) {
+      stop(
+        "The following required variables are missing from the dataset: ",
+        paste(missing_cols, collapse = ", ")
+      )
+    }
+  } else {
+    # If check is FALSE, only extract columns that actually exist to prevent data.table errors
+    final_cols <- intersect(final_cols, names(data))
+  }
+
+  # Subset the data.table using .SDcols
+  # Note: This assumes 'data' is already a data.table object
+  data <- data[, .SD, .SDcols = final_cols]
+
+  return(data)
+}

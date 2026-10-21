@@ -17,8 +17,6 @@ refit(model, new_data, outcome_col)
 }
 \value{
 The refitted model.
-
-The refitted model.
 }
 \description{
 Refit a model with new data
