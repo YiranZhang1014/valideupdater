@@ -1,5 +1,3 @@
-# update.R
-
 # ---- User-facing unified function ----
 #' Update a model with new data
 #' @param model_obj The original model object.

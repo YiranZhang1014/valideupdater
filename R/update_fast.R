@@ -1,7 +1,5 @@
-# update.R
-
 # ---- User-facing unified function ----
-#' Update a model with new data
+#' Update a model with new data (fast version)
 #' @param model_obj The original model object.
 #' @param new_data The dataset to use for updating the model.
 #' @param outcome_col The name of the outcome column in the dataset.

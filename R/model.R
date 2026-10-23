@@ -11,7 +11,9 @@ build_model <- function(coefs, type = c("linear", "logistic"), outcome = NULL) {
 
   # Check input types
   if (!is.numeric(coefs) || is.null(names(coefs))) {
-    stop("`coefs` must be a named numeric vector.")
+    stop(
+      "`coefs` is  NULL or not numeric. `coefs` must be a named numeric vector."
+    )
   }
 
   if (!is.null(outcome) && !is.character(outcome)) {

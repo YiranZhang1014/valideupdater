@@ -2,7 +2,7 @@
 % Please edit documentation in R/update_fast.R
 \name{update_fast}
 \alias{update_fast}
-\title{Update a model with new data}
+\title{Update a model with new data (fast version)}
 \usage{
 update_fast(
   model_obj,
@@ -28,5 +28,5 @@ update_fast(
 The updated model object containing new coefficients and update parameters.
 }
 \description{
-Update a model with new data
+Update a model with new data (fast version)
 }
